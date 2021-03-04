@@ -1,0 +1,6 @@
+node_modules
+ffmpeg.exe
+resources/soundfiles
+botconfig.json
+data.json
+.env
