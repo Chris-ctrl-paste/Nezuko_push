@@ -565,6 +565,139 @@ client.on('message', async (message) => {
 });
 
 
+const axios = require('axios');
+
+
+async function earthquake(message) {
+
+ 
+    const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.geojson';
+    let response, data;
+    try {
+        response = await axios.get(url);
+        
+        data = response.data;
+      
+       
+    } catch (e) {
+        return message.channel.send(`An error occured!`)
+    }
+
+
+    if(data.metadata.count === 0) {
+        return console.log("No quakes")
+    }
+
+
+
+
+    const embed = new MessageEmbed()
+
+    const earth = data.features
+
+
+    let fields = [];
+
+
+    let f = fs.readFileSync('./earthquakeid.json')
+    let eq = JSON.parse(f).features || []
+
+    const removeArray = eq
+
+
+    earth.forEach((earths) => {
+        
+        let someArray= [
+            earths
+           
+          ];
+          removeArray.filter(function(ra) {
+              someArray = someArray.filter(function(obj) {
+                  return !this.has(obj.id);
+                }, new Set(removeArray.map(obj => obj.id)))
+          });
+          
+          
+
+        
+
+
+
+          someArray.forEach((s) => {
+
+
+           
+
+            let field = {
+                name: s.properties.place + "\n",
+                value: "" + "\n",
+
+            };
+
+            if (s !== undefined) {
+                // field.value += earths.properties.place + "\n";
+                field.value += s.properties.mag + " Magnitude" + "\n";
+                field.value += s.properties.tsunami + " Tsunami" + "\n";
+                
+
+            }
+
+
+            let d = fs.readFileSync('./earthquakeid.json')
+        
+            let dd = JSON.parse(d)
+            dd["features"].push({"id":`${s.id}`});
+            let test = JSON.stringify(dd, null, " ");
+    
+         
+    
+           
+          
+
+            fields.push(field);
+
+
+            
+             
+
+              fs.writeFile("earthquakeid.json", test, function(err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+               
+            })
+            
+          
+             
+
+        
+  
+
+        
+    })
+    
+    if (!Array.isArray(fields) || !fields.length) 
+            return  console.log("No new Quakes yet.")
+       
+
+    embed.fields = fields;
+    // message.channel.send(embed)
+    client.channels.cache.get('812372315471740948').send(embed)
+    client.users.cache.get("129731646114103296").send(embed)
+}
+
+
+
+// 0 * * * *
+// * * * * *
+var CronJob = require('cron').CronJob;
+var job = new CronJob('0 * * * *', function() {
+  console.log('You will see this every hour');
+  earthquake()
+}, null, true, 'America/Los_Angeles');
+job.start();
+
 
 
 
