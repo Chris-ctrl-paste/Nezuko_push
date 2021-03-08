@@ -606,6 +606,15 @@ async function earthquake(message) {
 
 
     earth.forEach((earths) => {
+
+
+        if(earths.properties.place === "Kermadec Islands region" || "Kermadec Islands, New Zealand") {
+            return console.log("this place is too busy")
+        }
+
+
+
+
         
         let someArray= [
             earths
