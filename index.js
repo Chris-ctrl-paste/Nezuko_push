@@ -268,9 +268,9 @@ const dest = '759453597142089729';
 
 // Create a stream to follow tweets
 const stream = twitterClient.stream('statuses/filter', {
-    follow: '1283657064410017793, 987978757,  1077382642411204608',
+    follow: '1189216700182548480, 987978757,  1077382642411204608',
 });
-
+// @HaeHaeAe 1189216700182548480
 stream.on('tweet', tweet => {
     if (tweet.retweeted_status
         || tweet.in_reply_to_status_id
@@ -698,19 +698,36 @@ async function earthquake(message) {
 
 
 
-// 0 * * * *
-// * * * * *
-var CronJob = require('cron').CronJob;
-var job = new CronJob('0 * * * *', function() {
-  console.log('You will see this every hour');
-  earthquake()
-}, null, true, 'America/Los_Angeles');
-job.start();
+// // 0 * * * *
+// // * * * * *
+// var CronJob = require('cron').CronJob;
+// var job = new CronJob('0 * * * *', function() {
+//   console.log('You will see this every hour');
+//   earthquake()
+// }, null, true, 'America/Los_Angeles');
+// job.start();
 
 
 
 
+let image = ["./resources/images/nez1.jpg", "./resources/images/nez2.jpg", "./resources/images/nez3.jph", "./resources/images/nez4.jpg", 
+"./resources/images/nez5.jpg", "./resources/images/nez6.jpg", "./resources/images/nez7.jpg", "./resources/images/nez8.jpg", 
+"./resources/images/nez9.jpg", 
+]
 
+function change() {
+    let random = image[Math.floor(Math.random() * image.length)]
+    client.user.setAvatar(random)
+}
+
+
+setInterval(function () {
+    // Invoke function every 10 minutes
+
+    change()
+    console.log("changed profile picture")
+   
+},625000)
 
 
 
