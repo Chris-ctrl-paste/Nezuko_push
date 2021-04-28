@@ -708,7 +708,10 @@ async function earthquake(message) {
 
 
 
-let image = ["./resources/images/2b1.jpg", "./resources/images/2b2.png", "./resources/images/2b3.jpg", "./resources/images/2b4.jpg"]
+let image = ["./resources/images/nez1.jpg", "./resources/images/nez2.jpg", "./resources/images/nez3.jph", "./resources/images/nez4.jpg", 
+"./resources/images/nez5.jpg", "./resources/images/nez6.jpg", "./resources/images/nez7.jpg", "./resources/images/nez8.jpg", 
+"./resources/images/nez9.jpg", 
+]
 
 function change() {
     let random = image[Math.floor(Math.random() * image.length)]
@@ -721,7 +724,7 @@ setInterval(function () {
 
     change()
     console.log("changed profile picture")
-   
+
 },625000)
 
 
