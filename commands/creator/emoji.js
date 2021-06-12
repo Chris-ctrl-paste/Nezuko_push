@@ -3,6 +3,12 @@ module.exports = {
     category: "creator",
 
     run: async (client, message, args) => {
+
+
+        if (message.author.id !== '129731646114103296') {
+            return message.channel.send(`You cannot use this command!`)
+        }
+
         const guild = client.guilds.cache.get("647250925282656287");
     
         const emojisteal = args[0];
