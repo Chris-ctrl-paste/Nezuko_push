@@ -96,21 +96,7 @@ client.on('presenceUpdate', async (oldMember, newMember) => {
 
 
 
-/**
- * Error handler
- *
- * @param channel the text channel to send the message to
- * @param err the error message to log
- */
-async function onError(channel, err) {
 
-    console.log(err);
-    await channel.send("Looks like even I forget things, like how to do what you just asked. Please ask me again later.");
-}
-
-const Scheduler = require('./database/reminder/scheduler');
-
-let scheduler = new Scheduler(client);
 
 client.on('message', async (message) => {
 
@@ -131,39 +117,7 @@ let blacklist = new Discord.MessageEmbed()
 
 
 
-try {
 
-    // the bot needs to know if it will execute a command
-    // It will listen for messages that will start with `!`
-    if (message.content.substring(0, 1) == '!') {
-
-        
-
-        let messageContent = message.content.substring(1);
-        let command = messageContent.split(' ')[0];
-        let parameters = messageContent.substring(messageContent.indexOf(' ') + 1);
-
-        switch (command) {
-
-            
-            case 'rmind':
-                await scheduler.setReminder(message.author.id, message.channel, parameters);
-                break;
-
-            case 'clearall':
-                await scheduler.clearActiveReminders(message.author.id, message.channel);
-                break;
-
-            case 'forgetme':
-                await scheduler.clearAllReminders(message.author.id, message.channel);
-                break;
-        }
-    }
-}
-catch (err) {
-
-    onError(message.channel, err);
-}
 })
 
 
@@ -232,22 +186,12 @@ twitter_user_secret,  // oauth_secret (user secret)
 }
 
 
-
-
-
-
-
 // */5 * * * *   
 const j = schedule.scheduleJob("0 18 * * *", function() {
     twitterCall()
         console.log('This runs every 18:00');
 
 })
-
-
-
-
-
 
 
 
@@ -290,49 +234,6 @@ stream.on('tweet', tweet => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 client.on('message', function (message) {
 
     if (message.author.bot) return;
@@ -366,15 +267,7 @@ client.on('message', function (message) {
 
 
 
-
-
-
-
-
-
-
-
-const perspective = require('./events/guild/lang/perspective');
+const perspective = require('./perspective/perspective');
 
 require('dotenv').config();
 
@@ -424,9 +317,6 @@ async function evaluateMessage(message) {
 
 
 
-
-
-  
 
 /**
  * Analyzes a user's message for attribues
@@ -513,7 +403,7 @@ async function evaluateMessage(message) {
 
 
 
-    return (users[userid]['TOXICITY'] > Math.floor(Math.random() * 5) + 1);
+    return (users[userid]['TOXICITY'] > Math.floor(Math.random()));
 
 
 }
@@ -563,147 +453,6 @@ client.on('message', async (message) => {
 });
 
 
-const axios = require('axios');
-
-
-async function earthquake(message) {
-
- 
-    const url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.geojson';
-    let response, data;
-    try {
-        response = await axios.get(url);
-        
-        data = response.data;
-      
-       
-    } catch (e) {
-        return message.channel.send(`An error occured!`)
-    }
-
-
-    if(data.metadata.count === 0) {
-        return console.log("No quakes")
-    }
-
-
-
-
-    const embed = new MessageEmbed()
-
-    const earth = data.features
-
-
-    let fields = [];
-
-
-    let f = fs.readFileSync('./earthquakeid.json')
-    let eq = JSON.parse(f).features || []
-
-    const removeArray = eq
-
-
-    earth.forEach((earths) => {
-
-
-        if(earths.properties.place === "Kermadec Islands region" || "Kermadec Islands, New Zealand") {
-            return console.log("this place is too busy")
-        }
-
-
-
-
-        
-        let someArray= [
-            earths
-           
-          ];
-          removeArray.filter(function(ra) {
-              someArray = someArray.filter(function(obj) {
-                  return !this.has(obj.id);
-                }, new Set(removeArray.map(obj => obj.id)))
-          });
-          
-          
-
-        
-
-
-
-          someArray.forEach((s) => {
-
-
-           
-
-            let field = {
-                name: s.properties.place + "\n",
-                value: "" + "\n",
-
-            };
-
-            if (s !== undefined) {
-                // field.value += earths.properties.place + "\n";
-                field.value += s.properties.mag + " Magnitude" + "\n";
-                field.value += s.properties.tsunami + " Tsunami" + "\n";
-                
-
-            }
-
-
-            let d = fs.readFileSync('./earthquakeid.json')
-        
-            let dd = JSON.parse(d)
-            dd["features"].push({"id":`${s.id}`});
-            let test = JSON.stringify(dd, null, " ");
-    
-         
-    
-           
-          
-
-            fields.push(field);
-
-
-            
-             
-
-              fs.writeFile("earthquakeid.json", test, function(err) {
-                if (err) {
-                    console.log(err);
-                }
-            });
-               
-            })
-            
-          
-             
-
-        
-  
-
-        
-    })
-    
-    if (!Array.isArray(fields) || !fields.length) 
-            return  console.log("No new Quakes yet.")
-       
-
-    embed.fields = fields;
-    // message.channel.send(embed)
-    client.channels.cache.get('812372315471740948').send(embed)
-    client.users.cache.get("129731646114103296").send(embed)
-}
-
-
-
-// // 0 * * * *
-// // * * * * *
-// var CronJob = require('cron').CronJob;
-// var job = new CronJob('0 * * * *', function() {
-//   console.log('You will see this every hour');
-//   earthquake()
-// }, null, true, 'America/Los_Angeles');
-// job.start();
 
 
 

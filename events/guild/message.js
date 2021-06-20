@@ -2,9 +2,9 @@ const Timeout = new Set();
 const { MessageEmbed } = require('discord.js')
 const { prefix } = require('../../botconfig.json')
 const ms = require('ms')
-const language = require('./google/langOptions');
+const language = require('../../google/langOptions');
 const translate = require('@vitalets/google-translate-api');
-const speech = require('./google/messages');
+const speech = require('../../google/messages');
 const fs = require("fs");
 const Discord = require("discord.js");
 
@@ -88,15 +88,6 @@ module.exports = async (bot, message) => {
           // ID or ID(s) of user you wish to blacklist here
           if (bannedIDs.includes(message.author.id))
             return message.channel.send(blacklist);
-
-
-
-
-
-
-
-
-
 
 
 
