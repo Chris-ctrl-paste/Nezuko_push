@@ -11,6 +11,7 @@ client.categories = fs.readdirSync("./commands/");
 client.prefix = config.prefix;
 const { MessageEmbed } = require('discord.js');
 
+const path = require('path')
 
 require('dotenv').config();
 
@@ -275,17 +276,9 @@ LikeTweet.on('tweet', tweet => {
 
 
 // ALL THE GIFS MOHAHAH
-let gif = ["./resources/gifs/anime-hug.gif", "./resources/gifs/anime-hug1.gif", "./resources/gifs/anime-hug2.gif", "./resources/gifs/anime-hug3.gif", 
-"./resources/gifs/anime-hug4.gif", "./resources/gifs/anime-hug5.gif", "./resources/gifs/anime-hug6.gif", "./resources/gifs/anime-hug8.gif", "./resources/gifs/anime-hug9.gif",
-"./resources/gifs/anime-hug10.gif", "./resources/gifs/anime-hug11.gif", "./resources/gifs/anime-hug12.gif", "./resources/gifs/anime-hug14.gif", "./resources/gifs/anime-hug15.gif", 
-"./resources/gifs/anime-hug16.gif", "./resources/gifs/anime-hug17.gif", "./resources/gifs/anime-hug18.gif", "./resources/gifs/anime-hug19.gif", "./resources/gifs/anime-hug20.gif", 
-"./resources/gifs/anime-hug21.gif", "./resources/gifs/anime-hug23.gif", "./resources/gifs/anime-hug24.gif", "./resources/gifs/anime-hug25.gif", 
-"./resources/gifs/anime-hug26.gif", "./resources/gifs/anime-hug27.gif", "./resources/gifs/anime-hug28.gif", "./resources/gifs/anime-hug29.gif", "./resources/gifs/anime-hug30.gif", 
-"./resources/gifs/anime-hug31.gif", "./resources/gifs/anime-hug32.gif", "./resources/gifs/anime-hug33.gif", "./resources/gifs/anime-hug34.gif", 
- 
-]
 
-let gifs = gif[Math.floor(Math.random() * gif.length)]
+
+
 //  ------
 
 // random quote 
@@ -300,10 +293,11 @@ const jsonQuotes = fs.readFileSync(
   
 
 
-
-
-
-const b64content = fs.readFileSync(`${gifs}`, { encoding: 'base64' })
+let files = fs.readdirSync('./resources/gifs').filter(file=>file.endsWith('.gif'))
+        
+let chosenFile = files[Math.floor(Math.random() * files.length)] 
+    
+const b64content = fs.readFileSync(path.join('resources/gifs', chosenFile), { encoding: 'base64' })
 // first we must post the media to Twitter
 twitterClientLikeComment.post('media/upload', { media_data: b64content }, function (err, data, response) {
   // now we can assign alt text to the media, for use by screen readers and
