@@ -2,9 +2,9 @@ const puppeteer = require('puppeteer');
 
 const getMangaListOfChapters = async(manga_url, mangaReadingList) => {
     const browser = await puppeteer.launch({
-		headless: true
+		headless: false
 	  });
-
+     console.log(mangaReadingList)
     const page = await browser.newPage();
 
     let result = [];
@@ -17,16 +17,16 @@ const getMangaListOfChapters = async(manga_url, mangaReadingList) => {
         })
         
     }
-    
+  
     await page.close();
     await browser.close();
-
+    
     return result;
 }
 
 const getChapters = async(page, manga_url, mangaTitle) => {
     await page.goto(`${manga_url}/${mangaTitle}`);
-
+    console.log(mangaTitle)
     const getXpath = await getMangaChaptersElement(page);
     const getMsg = await page.evaluate(name => name.innerText, getXpath);
     return getMsg.split("\n");
