@@ -10,7 +10,6 @@ client.aliases = new Discord.Collection();
 client.categories = fs.readdirSync("./commands/");
 client.prefix = config.prefix;
 const { MessageEmbed } = require('discord.js');
-
 const path = require('path')
 
 require('dotenv').config();
@@ -23,8 +22,9 @@ require('dotenv').config();
 
 
 //THIS STORES THE MESSAGES!
-const statusMessages = {};
-
+const deleteStream = './streamerID.json';
+const statusMessages = require(deleteStream);
+  
 
 client.on('presenceUpdate', async (oldMember, newMember) => {
 
@@ -40,8 +40,7 @@ client.on('presenceUpdate', async (oldMember, newMember) => {
     const oldStreamingStatus = oldMember.activities.find(activity => activity.type === 'STREAMING') ? true : false;
     const newStreamingStatus = newMember.activities.find(activity => activity.type === 'STREAMING') ? true : false;
 
-
-
+  
 
 
     if (oldStreamingStatus == newStreamingStatus) {
@@ -51,7 +50,7 @@ client.on('presenceUpdate', async (oldMember, newMember) => {
 // THIS IS WHEN THEY STOP STREAMING AND NEZUKO DELETES IT!
     if (newStreamingStatus == stopStreamingStatus) {
 
-        const streamChannel = client.channels.cache.get("776198796182290472")
+        // const streamChannel = client.channels.cache.get("776198796182290472")
         if (!streamChannel) return console.error('Unable to find welcome channel.');
 
         try {
@@ -61,9 +60,17 @@ client.on('presenceUpdate', async (oldMember, newMember) => {
             await message.delete();
             delete statusMessages[member.guild.id][member.id];
 
+            fs.writeFileSync('./streamerID.json', JSON.stringify(statusMessages, null, 2), 'utf-8', err => {
+                if(err) throw err;
+                console.log(JSON.stringify(statusMessages));
+                console.log('writing to' + deleteStream)
+             
+              })
+
+
         } catch (err) {
             console.error(err)
-           
+            // client.users.cache.get('129731646114103296').send(`Error New Stream: ${err} - ${statusMessages} `)
         }
     }
 
@@ -77,7 +84,6 @@ client.on('presenceUpdate', async (oldMember, newMember) => {
             try {
                 const message = await streamChannel.send(`Hey! <${activity.url}> is streaming!`)
 
-
                 if (!statusMessages[member.guild.id]) statusMessages[member.guild.id] = {};
                 statusMessages[member.guild.id][member.id] = message.id
 
@@ -87,7 +93,11 @@ client.on('presenceUpdate', async (oldMember, newMember) => {
                 client.users.cache.get('129731646114103296').send(`Error New Stream: ${err} - ${statusMessages} `)
             }
 
-
+            fs.writeFileSync('./streamerID.json', JSON.stringify(statusMessages, null, 2), 'utf-8', err => {
+                if(err) throw err;
+                console.log(JSON.stringify(statusMessages));
+                console.log('writing to' + deleteStream)
+            })
             console.log(statusMessages)
 
 
@@ -96,7 +106,6 @@ client.on('presenceUpdate', async (oldMember, newMember) => {
             return;
     }
 });
-
 
 
 
@@ -200,44 +209,6 @@ const j = schedule.scheduleJob("0 18 * * *", function() {
 
 
 const Twitter = require('twit');
-const twitterConf = {
-    consumer_key: process.env.CONSUMER_KEY,
-    consumer_secret:  process.env.CONSUMER_SECRET,
-    access_token:  process.env.ACCESS_TOKEN,
-    access_token_secret:  process.env.ACCESS_TOKEN_SECRET,
-}
-
-const twitterClient = new Twitter(twitterConf);
-// Specify destination channel ID below
-const dest = '759453597142089729';
-
-// Create a stream to follow tweets
-const stream = twitterClient.stream('statuses/filter', {
-    follow: '987978757,  550017684, 1129432086287245318 ',
-});
-
-stream.on('tweet', tweet => {
-    if (tweet.retweeted_status
-        || tweet.in_reply_to_status_id
-        || tweet.in_reply_to_status_id_str
-        || tweet.in_reply_to_user_id
-        || tweet.in_reply_to_user_id_str
-        || tweet.in_reply_to_screen_name)
-        return true
-
-    if(!tweet.entities.media) return;     
-
-    const twitterMessage = ` https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}`
-    client.channels.cache.get(dest).send(twitterMessage);
-    return false;
-});
-
-
-
-
-// const Twitter = require('twit');
-
-
 const twitterConfig = {
     consumer_key: process.env.CONSUMER_KEY,
     consumer_secret:  process.env.CONSUMER_SECRET,
@@ -272,14 +243,12 @@ LikeTweet.on('tweet', tweet => {
   })
 
 
-// --------------
-
-
-// ALL THE GIFS MOHAHAH
 
 
 
-//  ------
+
+
+
 
 // random quote 
 const jsonQuotes = fs.readFileSync(
@@ -288,16 +257,14 @@ const jsonQuotes = fs.readFileSync(
   );
   const quoteArray = JSON.parse(jsonQuotes).quotes;
   
-  const randomQuote =
-    quoteArray[Math.floor(Math.random() * quoteArray.length)];
+  const randomQuote = quoteArray[Math.floor(Math.random() * quoteArray.length)];
   
-
 
 let files = fs.readdirSync('./resources/gifs').filter(file=>file.endsWith('.gif'))
         
 let chosenFile = files[Math.floor(Math.random() * files.length)] 
     
-const b64content = fs.readFileSync(path.join('resources/gifs', chosenFile), { encoding: 'base64' })
+const b64content = fs.readFileSync(path.join('resources/gifs', chosenFile), { encoding: 'base64' })    
 // first we must post the media to Twitter
 twitterClientLikeComment.post('media/upload', { media_data: b64content }, function (err, data, response) {
   // now we can assign alt text to the media, for use by screen readers and
@@ -328,18 +295,6 @@ twitterClientLikeComment.post('media/upload', { media_data: b64content }, functi
 
 });
 // ------------------------- tweet like comment code ends here
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
